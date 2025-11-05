@@ -2,7 +2,7 @@ package ejercicioGrupo;
 
 public class HiloGrupos extends Thread {
 	private int miTurno;
-	private static int turno = 1; // 1=Tics, 2=Tacs, 3=Tocs
+	private static int turno = 1; // 1-->Tics, 2---->Tacs, 3--->Tocs
 	private static boolean ticsEscrito = false;
 	private static boolean tacsEscrito = false;
 	private static boolean tocsEscrito = false;
@@ -17,27 +17,37 @@ public class HiloGrupos extends Thread {
 		for (int i = 0; i < 10; i++) {
 			boolean turnoEscrito = false;
 			while (!turnoEscrito) {
+				//TICS
 				if (miTurno == 1 && turno == 1 && !ticsEscrito) {
-					System.out.println(getThreadGroup().getName() + " -> " + getName());
+					// importante actualizar las variables lo primero para intentar evitar
+					// que otros hilos entren
 					ticsEscrito = true;
+					turnoEscrito = true;
+					System.out.println(getThreadGroup().getName() + " -> " + getName());
 					turno = 2;
 					tacsEscrito = false;
-					turnoEscrito = true;
-
+					
+					//TACS
 				} else if (miTurno == 2 && turno == 2 && !tacsEscrito) {
-					System.out.println(getThreadGroup().getName() + " -> " + getName());
+					turnoEscrito = true;
 					tacsEscrito = true;
+					System.out.println(getThreadGroup().getName() + " -> " + getName());
 					turno = 3;
 					tocsEscrito = false;
-					turnoEscrito = true;
+					
+					
+					//TOCCS
 				} else if (miTurno == 3 && turno == 3 && !tocsEscrito) {
-					System.out.println(getThreadGroup().getName() + " -> " + getName());
+					turnoEscrito = true;
 					tocsEscrito = true;
+					System.out.println(getThreadGroup().getName() + " -> " + getName());
 					turno = 1;
 					ticsEscrito = false;
-					turnoEscrito = true;
+					
 				}
-
+			// Con sleep conseguimos que haya escrito o no salga de la cpu para intentar 
+			// evitar que el hilo escriba cuando no le toca
+			
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
@@ -48,4 +58,18 @@ public class HiloGrupos extends Thread {
 			
 		}
 	}
+	public static void main(String[] args) {
+		ThreadGroup grupoTics = new ThreadGroup("Tics");
+		ThreadGroup grupoTacs = new ThreadGroup("Tacs");
+		ThreadGroup grupoTocs = new ThreadGroup("Tocs");
+
+		
+		for (int i = 1; i <= 3; i++) {
+			new HiloGrupos(grupoTics, "Tic " + i, 1).start();
+			new HiloGrupos(grupoTacs, "Tac " + i, 2).start();
+			new HiloGrupos(grupoTocs, "Toc " + i, 3).start();
+		}
+	}
+	
+	
 }
